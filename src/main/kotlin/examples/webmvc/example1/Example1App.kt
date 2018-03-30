@@ -1,4 +1,4 @@
-package examples.noflux
+package examples.webmvc.example1
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner

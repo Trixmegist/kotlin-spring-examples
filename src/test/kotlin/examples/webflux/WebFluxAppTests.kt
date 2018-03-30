@@ -1,4 +1,4 @@
-package examples.basic
+package examples.webflux
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -9,10 +9,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ExtendWith(SpringExtension::class)
 @SpringBootTest
 @DataJpaTest
-class BasicsApplicationTests {
+class WebFluxAppTests {
 
-	@Test
-	fun contextLoads() {
-	}
-
+    @Test
+    fun contextLoads() {
+    }
 }

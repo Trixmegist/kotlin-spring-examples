@@ -1,4 +1,4 @@
-package examples.basic
+package examples.webmvc.example2
 
 import org.jetbrains.exposed.spring.SpringTransactionManager
 import org.jetbrains.exposed.sql.*
@@ -63,7 +63,7 @@ class ExposedCustomerService(private val tt: TransactionTemplate) : CustomerServ
 						Customers.id.eq(id)
 					}
 					.map {
-						Customer(id = it[Customers.id], name = it[Customers.name])
+                        Customer(id = it[Customers.id], name = it[Customers.name])
 					}
 					.singleOrNull()
 
@@ -71,13 +71,13 @@ class ExposedCustomerService(private val tt: TransactionTemplate) : CustomerServ
 			Customers
 					.selectAll()
 					.map {
-						Customer(id = it[Customers.id], name = it[Customers.name])
+                        Customer(id = it[Customers.id], name = it[Customers.name])
 					}
 
 
 	override fun insert(c: Customer) {
 		Customers.insert {
-			it[Customers.name] = c.name
+			it[name] = c.name
 		}
 	}
 }

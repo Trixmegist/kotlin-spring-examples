@@ -1,4 +1,4 @@
-package examples.noflux
+package examples.webmvc.example1
 
 import org.springframework.data.repository.CrudRepository
 
