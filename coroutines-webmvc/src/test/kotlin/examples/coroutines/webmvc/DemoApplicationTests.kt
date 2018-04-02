@@ -1,4 +1,4 @@
-package examples.coroutines
+package examples.coroutines.webmvc
 
 import examples.coroutines.webmvc.service.DemoService
 import examples.coroutines.webmvc.web.DemoController

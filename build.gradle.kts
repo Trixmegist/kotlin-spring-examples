@@ -18,10 +18,6 @@ allprojects {
             freeCompilerArgs = listOf("-Xjsr305=strict")
         }
     }
-
-//    val test by tasks.getting(Test::class) {
-//        useJUnitPlatform()
-//    }
 }
 
 repositories {

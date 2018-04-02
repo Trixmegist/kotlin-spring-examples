@@ -1,4 +1,5 @@
 include 'webflux'
 include 'webmvc'
-include 'coroutines'
+include 'coroutines-webflux'
+include 'coroutines-webmvc'
 

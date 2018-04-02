@@ -16,9 +16,8 @@
 
 package examples.coroutines.webmvc
 
-import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.cache.CacheManager
+import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.cache.ehcache.EhCacheCacheManager
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean
@@ -31,18 +30,17 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableCoroutine
 @EnableCaching
 @EnableScheduling
-class ApplicationConfiguration {
+class CoroutinesWebMvcApp {
     @Bean
-    fun cacheManager(): CacheManager = EhCacheCacheManager(ehCacheManager().`object`!!)
+    fun cacheManager() = EhCacheCacheManager(ehCacheManager().`object`!!)
 
     @Bean
-    fun ehCacheManager(): EhCacheManagerFactoryBean =
-            EhCacheManagerFactoryBean().apply {
-                setConfigLocation(ClassPathResource("ehcache.xml"))
-                setShared(true)
-            }
+    fun ehCacheManager() = EhCacheManagerFactoryBean().apply {
+        setConfigLocation(ClassPathResource("ehcache.xml"))
+        setShared(true)
+    }
 }
 
 fun main(vararg args: String) {
-    SpringApplication.run(ApplicationConfiguration::class.java, *args)
+    runApplication<CoroutinesWebMvcApp>(*args)
 }
