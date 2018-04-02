@@ -28,13 +28,13 @@ class CoroutineListener {
     @EventListener
     suspend fun handle(event: SimpleEvent) {
         delay(10)
-        logger.info ("Received event $event")
+        logger.info("Received event $event")
     }
 
     @EventListener
     suspend fun handleDemoEvent(event: DemoApplicationEvent) {
         delay(10)
-        logger.info ("Received demoEvent $event")
+        logger.info("Received demoEvent $event")
     }
 
     companion object {

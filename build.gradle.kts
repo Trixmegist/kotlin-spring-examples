@@ -23,6 +23,3 @@ allprojects {
 repositories {
     mavenCentral()
 }
-dependencies {
-}
-

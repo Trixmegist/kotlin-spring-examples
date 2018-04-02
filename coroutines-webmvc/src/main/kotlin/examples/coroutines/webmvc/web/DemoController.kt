@@ -17,6 +17,7 @@
 package examples.coroutines.webmvc.web
 
 import examples.coroutines.webmvc.service.DemoService
+import examples.coroutines.webmvc.util.log
 import examples.coroutines.webmvc.util.logger
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
@@ -39,7 +40,9 @@ class DemoController(
     @GetMapping("/delayed")
     suspend fun delayedReturn(): String {
         logger.info ("Before call to [demoService.delayed]")
-        val result = demoService.delayedReturn("delayed", 1000)
+        val result = demoService.delayedReturn("delayed", 1000).apply {
+            log.error("Test log extension field")
+        }
         logger.info ("After call to [demoService.delayed]")
 
         return result

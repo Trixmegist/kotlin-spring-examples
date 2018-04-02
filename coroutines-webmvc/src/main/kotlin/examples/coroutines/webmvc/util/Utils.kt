@@ -27,3 +27,6 @@ fun <T : Any> unwrapCompanionClass(ofClass: Class<T>): Class<*> =
             ofClass.enclosingClass
         else ofClass
 
+
+inline val <reified T : Any> T.log: Logger
+    get() = LoggerFactory.getLogger(T::class.java)
