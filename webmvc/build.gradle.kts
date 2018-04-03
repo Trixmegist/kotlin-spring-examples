@@ -8,6 +8,10 @@ plugins {
     id("io.spring.dependency-management")
 }
 
+springBoot {
+    mainClassName = "examples.webmvc.example1.Application"
+}
+
 repositories {
     mavenCentral()
     maven { url = uri("https://dl.bintray.com/kotlin/exposed/") }
