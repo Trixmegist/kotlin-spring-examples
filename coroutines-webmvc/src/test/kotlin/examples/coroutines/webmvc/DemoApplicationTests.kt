@@ -1,13 +1,19 @@
 package examples.coroutines.webmvc
 
+import examples.coroutines.webmvc.service.Customer
+import examples.coroutines.webmvc.service.CustomerRepository
 import examples.coroutines.webmvc.service.DemoService
+import examples.coroutines.webmvc.web.CustomerController
 import examples.coroutines.webmvc.web.DemoController
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import kotlinx.coroutines.experimental.runBlocking
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -36,40 +42,48 @@ class CoTests {
     lateinit var mvc: MockMvc
 
     @MockK
-    lateinit var demoservice: DemoService
+    lateinit var demoService: DemoService
     @MockK
-    lateinit var publisher: ApplicationEventPublisher;
+    lateinit var customerRepository: CustomerRepository
+    @MockK
+    lateinit var publisher: ApplicationEventPublisher
     @MockK
     lateinit var coroutinePublisher: CoroutineApplicationEventPublisher
 
     @InjectMockKs
     lateinit var demoController: DemoController
+    @InjectMockKs
+    lateinit var customerController: CustomerController
 
     @BeforeEach
     fun init() {
-        mvc = MockMvcBuilders.standaloneSetup(demoController).build()
+        mvc = MockMvcBuilders
+                .standaloneSetup(demoController)
+                .setCustomArgumentResolvers(ContinuationArgumentResolver)
+                .setCustomReturnValueHandlers(DeferredReturnValueHandler)
+                .build()
     }
 
     @Test
-    fun `Should return`() {
-//        val expectedCustomer = Customer("Johnny", "Depp")
-
-        coEvery { demoservice.delayedReturn("Hello", 10) } returns "Hello"
+    @Disabled("As of now, MockK mocks don't work with MockMVC")
+    fun `Test coroutine through mockMvc`() {
+        coEvery { demoService.delayedReturn("Hello", 10) } returns "Hello"
 
         mvc.perform(MockMvcRequestBuilders.get("/delayed"))
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().string("Hello"))
 
-        coVerify { demoservice.delayedReturn("Hello", 10) }
+        coVerify { demoService.delayedReturn("Hello", 10) }
     }
 
-//    @Test
-//    fun `Should throw`() {
-//        every { customerRepository.findByLastName("Depp") } throws IllegalArgumentException()
-//
-//        mvc.perform(get("/customers/Depp"))
-//                .andExpect(status().is5xxServerError)
-//
-//        mockKVerify { customerRepository.findByLastName("Depp") }
-//    }
+    @Test
+    fun `Test coroutine directly`() {
+        val expectedCustomer = Customer(name = "Johnny Depp")
+        coEvery { customerRepository.findByName("Depp") } returns expectedCustomer
+
+        val result = runBlocking { customerController.customer("Depp") }
+
+        assertEquals(expectedCustomer, result)
+        coVerify { customerRepository.findByName("Depp") }
+    }
 }
