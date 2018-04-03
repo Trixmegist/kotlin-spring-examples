@@ -6,8 +6,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.support.beans
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.body
 import org.springframework.web.reactive.function.server.router
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -35,23 +37,7 @@ fun main(args: Array<String>) {
                 bean {
                     router {
                         GET("/hi") {
-                            ServerResponse.ok().body(Flux.just("Hello, functional reactive"), String::class.java)
-                        }
-                    }
-                }
-
-                bean {
-                    router {
-                        val customerRepository = ref<CustomerRepository>()
-
-                        "/customers".nest {
-                            GET("/") {
-                                ServerResponse.ok().body( customerRepository.findAll())
-                            }
-                            GET("/{name}") {
-                                val name = it.pathVariable("name")
-                                ServerResponse.ok().body(customerRepository.findByName(name))
-                            }
+                            ServerResponse.ok().body(Flux.just("Hi from router"), String::class.java)
                         }
                     }
                 }
@@ -59,14 +45,14 @@ fun main(args: Array<String>) {
             .run(*args)
 }
 
-//@RestController
-//class CustomerController(val customerRepository: CustomerRepository) {
-//    @GetMapping("/customers")
-//    fun customers() = customerRepository.findAll()
-//
-//    @GetMapping("/customers/{name}")
-//    fun customer(@PathVariable name: String) = customerRepository.findByName(name)
-//}
+@RestController
+class CustomerController(val customerRepository: CustomerRepository) {
+    @GetMapping("/customers")
+    fun customers() = customerRepository.findAll()
+
+    @GetMapping("/customers/{name}")
+    fun customer(@PathVariable name: String) = customerRepository.findByName(name)
+}
 
 interface CustomerRepository : ReactiveMongoRepository<Customer, String> {
     fun findByName(name: String): Mono<Customer>

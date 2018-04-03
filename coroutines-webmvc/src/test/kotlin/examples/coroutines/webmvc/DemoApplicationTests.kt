@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import examples.MockitoExtension
 import examples.coroutines.webmvc.service.Customer
 import examples.coroutines.webmvc.service.CustomerRepository
 import examples.coroutines.webmvc.web.CustomerController
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -87,7 +87,6 @@ class `MockK coroutines tests` {
     }
 }
 
-@ExtendWith(MockitoExtension::class)
 class `Mockito corotines tests` {
 
     lateinit var mvc: MockMvc
@@ -98,6 +97,7 @@ class `Mockito corotines tests` {
 
     @BeforeEach
     fun init() {
+        MockitoAnnotations.initMocks(this)
         mvc = MockMvcBuilders
                 .standaloneSetup(customerController)
                 .setCustomArgumentResolvers(ContinuationArgumentResolver)

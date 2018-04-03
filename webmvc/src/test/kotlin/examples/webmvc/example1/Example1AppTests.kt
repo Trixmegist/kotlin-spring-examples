@@ -3,7 +3,6 @@ package examples.webmvc.example1
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.whenever
-import examples.MockitoExtension
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -24,22 +24,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import com.nhaarman.mockito_kotlin.verify as mockitoVerify
 import io.mockk.verify as mockKVerify
 
-val OBJECT_MAPPER = ObjectMapper()
+private val OBJECT_MAPPER = ObjectMapper()
 
 @Throws(JsonProcessingException::class)
-fun <T> T.asJson(): String = OBJECT_MAPPER.writeValueAsString(this)
+private fun <T> T.asJson(): String = OBJECT_MAPPER.writeValueAsString(this)
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest
 @DataJpaTest
-class BasicsApplicationTests {
+class Example1Tests {
 
     @Test
     fun contextLoads() {
     }
 }
 
-@ExtendWith(MockitoExtension::class)
 class MockitoKotlinMvcTest {
 
     lateinit var mvc: MockMvc
@@ -52,6 +51,7 @@ class MockitoKotlinMvcTest {
 
     @BeforeEach
     fun init() {
+        MockitoAnnotations.initMocks(this)
         mvc = MockMvcBuilders.standaloneSetup(customerController).build()
     }
 
