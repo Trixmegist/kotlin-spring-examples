@@ -16,6 +16,10 @@
 
 package examples.coroutines.webmvc
 
+import examples.coroutines.webmvc.service.Customer
+import examples.coroutines.webmvc.service.CustomerRepository
+import kotlinx.coroutines.experimental.runBlocking
+import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
@@ -38,6 +42,12 @@ class CoroutinesWebMvcApp {
     fun ehCacheManager() = EhCacheManagerFactoryBean().apply {
         setConfigLocation(ClassPathResource("ehcache.xml"))
         setShared(true)
+    }
+
+    @Bean
+    fun dbInit(customerRepository: CustomerRepository) = CommandLineRunner {
+        val customers = arrayOf("Zhenya", "Dima", "Stas", "Tair").map { Customer(name = it) }
+        runBlocking { customerRepository.saveAll(customers) }.forEach { println(it) }
     }
 }
 

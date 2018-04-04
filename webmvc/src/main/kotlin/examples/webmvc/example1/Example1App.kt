@@ -9,41 +9,31 @@ import org.springframework.context.annotation.Bean
 @SpringBootApplication
 class Application {
 
-	private val log = LoggerFactory.getLogger(Application::class.java)
+    private val log = log()
 
-	@Bean
-	fun init(repository: CustomerRepository) = CommandLineRunner {
-			// save a couple of customers
-			repository.save(Customer("Jack", "Bauer"))
-			repository.save(Customer("Chloe", "O'Brian"))
-			repository.save(Customer("Kim", "Bauer"))
-			repository.save(Customer("David", "Palmer"))
-			repository.save(Customer("Michelle", "Dessler"))
+    @Bean
+    fun init(repository: CustomerRepository) = CommandLineRunner {
+        repository.saveAll(listOf(
+                Customer("Jack", "Bauer"),
+                Customer("Chloe", "O'Brian"),
+                Customer("Kim", "Bauer"),
+                Customer("David", "Palmer"),
+                Customer("Michelle", "Dessler")
+        ))
 
-			// fetch all customers
-			log.info("Customers found with findAll():")
-			log.info("-------------------------------")
-			repository.findAll().forEach { log.info(it.toString()) }
-			log.info("")
+        log.info("Customers found with findAll():")
+        repository.findAll().forEach { log.info(it.toString()) }
 
-			// fetch an individual customer by ID
-			val customer = repository.findById(1L)
-			customer.ifPresent {
-				log.info("Customer found with findById(1L):")
-				log.info("--------------------------------")
-				log.info(it.toString())
-				log.info("")
-			}
+        log.info("Customer found with findById(1L):")
+        repository.findById(1L).ifPresent { log.info(it.toString()) }
 
-			// fetch customers by last name
-			log.info("Customer found with findByLastName('Bauer'):")
-			log.info("--------------------------------------------")
-			repository.findByLastName("Bauer").forEach { log.info(it.toString()) }
-			log.info("")
-	}
-
+        log.info("Customer found with findByLastName('Bauer'):")
+        repository.findByLastName("Bauer").forEach { log.info(it.toString()) }
+    }
 }
 
 fun main(args: Array<String>) {
     runApplication<Application>(*args)
 }
+
+inline fun <reified T> T.log() = LoggerFactory.getLogger(T::class.java)!!

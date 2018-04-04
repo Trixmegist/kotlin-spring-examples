@@ -16,101 +16,75 @@ class BasicsApplication
 
 fun main(args: Array<String>) {
 
-	SpringApplicationBuilder()
-			.sources(BasicsApplication::class.java)
-			.initializers(beans {
-				bean {
-					SpringTransactionManager(ref())
-				}
-				bean {
-					ApplicationRunner {
+    SpringApplicationBuilder()
+            .sources(BasicsApplication::class.java)
+            .initializers(beans {
+                bean {
+                    SpringTransactionManager(ref())
+                }
+                bean {
+                    ApplicationRunner {
 
-						val cs = ref<CustomerService>()
+                        val cs = ref<CustomerService>()
 
-						arrayOf("Josh", "Christian", "Markus", "Manjari",
-								"Billy", "Terri", "Ambili", "Chris")
-								.map { Customer(name = it) }
-								.forEach { cs.insert(it) }
+                        arrayOf("Josh", "Christian", "Markus", "Manjari",
+                                "Billy", "Terri", "Ambili", "Chris")
+                                .map { Customer(name = it) }
+                                .forEach { cs.insert(it) }
 
-						cs.all().forEach {
-							println(cs.byId(it.id!!))
-						}
+                        cs.all().forEach {
+                            println(cs.byId(it.id!!))
+                        }
 
-					}
-				}
-			})
-			.run(*args)
+                    }
+                }
+            })
+            .run(*args)
 }
 
 object Customers : Table() {
-	val id = long("id").autoIncrement().primaryKey()
-	val name = varchar("name", 255)
+    val id = long("id").autoIncrement().primaryKey()
+    val name = varchar("name", 255)
 }
 
 @Service
 @Transactional
 class ExposedCustomerService(private val tt: TransactionTemplate) : CustomerService, InitializingBean {
 
-	override fun afterPropertiesSet() {
-		tt.execute {
-			SchemaUtils.create(Customers)
-		}
-	}
+    override fun afterPropertiesSet() {
+        tt.execute {
+            SchemaUtils.create(Customers)
+        }
+    }
 
-	override fun byId(id: Long): Customer? =
-			Customers
-					.select {
-						Customers.id.eq(id)
-					}
-					.map {
+    override fun byId(id: Long): Customer? =
+            Customers
+                    .select {
+                        Customers.id.eq(id)
+                    }.map {
                         Customer(id = it[Customers.id], name = it[Customers.name])
-					}
-					.singleOrNull()
+                    }.singleOrNull()
 
-	override fun all(): Collection<Customer> =
-			Customers
-					.selectAll()
-					.map {
+    override fun all(): Collection<Customer> =
+            Customers
+                    .selectAll()
+                    .map {
                         Customer(id = it[Customers.id], name = it[Customers.name])
-					}
+                    }
 
 
-	override fun insert(c: Customer) {
-		Customers.insert {
-			it[name] = c.name
-		}
-	}
+    override fun insert(c: Customer) {
+        Customers.insert {
+            it[name] = c.name
+        }
+    }
 }
-
-/*
-
-@Service
-class JdbcCustomerService(private val jdbcTemplate: JdbcTemplate) : CustomerService {
-
-	override fun byId(id: Long): Customer? = this.jdbcTemplate.queryForObject(
-			"SELECT * FROM CUSTOMERS WHERE ID = ? ", id) { rs, i ->
-		Customer(rs.getLong("ID"), rs.getString("NAME"))
-	}
-
-	override fun all(): Collection<Customer> =
-			this.jdbcTemplate.query("SELECT * FROM CUSTOMERS ") { rs, i ->
-				Customer(rs.getLong("ID"), rs.getString("NAME"))
-			}
-
-	override fun insert(c: Customer) {
-		this.jdbcTemplate.execute("INSERT INTO CUSTOMERS(NAME) VALUES (?)") {
-			it.setString(1, c.name)
-			it.execute()
-		}
-	}
-}
-*/
 
 
 interface CustomerService {
-	fun byId(id: Long): Customer?
-	fun all(): Collection<Customer>
-	fun insert(c: Customer)
+    fun byId(id: Long): Customer?
+    fun all(): Collection<Customer>
+    fun insert(c: Customer)
 }
 
 data class Customer(val id: Long? = null, val name: String? = null)
